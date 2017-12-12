@@ -7,8 +7,21 @@ block content
         h1.display-4.m-b-2 Search Pet Store
 
         // register form
-        form(method='POST' action='/register')
+        form(method='POST' action='/')
           div.form-group
-            label(for='pets')
-            input#pets.form-control(type='text', placeholder='search for pets' name='pets')
+            label(for='pet')
+            input#pet.form-control(type='text', placeholder='search for pets' name='pet')
           button.btn.btn-primary(type='submit') Search
+
+        h1.display-4.m-b-2 Results
+        table
+          tbody
+              tr
+                th Animal
+                th Size
+                th Behaviour
+              for animal in animals
+                tr
+                  td= animal[0]
+                  td= animal[1]
+                  td= animal[2]

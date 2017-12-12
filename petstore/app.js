@@ -22,8 +22,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//handle form submit
+app.post("/", function (req, res) {
+	const pet = req.body.pet
+	const all = [[pet,"Big","Funny"],[pet, "Big", "Funny"],[pet, "Big", "Funny"]]
+	res.render('index', {
+		animals: all
+	});
+});
+
 app.use('/', index);
 app.use('/users', users);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -42,5 +52,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+app.listen(3005, () => console.log('Example app listening on port 3005!'))
 
 module.exports = app;
