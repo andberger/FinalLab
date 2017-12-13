@@ -29,7 +29,7 @@ app.post("/", function (req, res) {
 	const all = [[pet,"Big","Funny"],[pet, "Big", "Funny"],[pet, "Big", "Funny"]]
 	getPets(pet, function(data){
 		let all = []
-		data.forEach( e => {all.push([e[0].species, e[0].size, e[0].mood])});
+		if(data[0].length)data.forEach( e => {all.push([e[0].species, e[0].size, e[0].mood])});
 		res.render('index', {
 			animals: all
 		});

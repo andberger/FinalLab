@@ -20,8 +20,14 @@ block content
                 th Animal
                 th Size
                 th Behaviour
-                for animal in animals
+                if animals
+                  for animal in animals
+                    tr
+                      td= animal[0]
+                      td= animal[1]
+                      td= animal[2]
+                else
                   tr
-                    td= animal[0]
-                    td= animal[1]
-                    td= animal[2]
+                    td
+                    td
+                    td
