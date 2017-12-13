@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+const sqlite3 = require('sqlite3').verbose();
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -26,10 +27,42 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post("/", function (req, res) {
 	const pet = req.body.pet
 	const all = [[pet,"Big","Funny"],[pet, "Big", "Funny"],[pet, "Big", "Funny"]]
-	res.render('index', {
-		animals: all
+	getPets(pet, function(data){
+		let all = []
+		data.forEach( e => {all.push([e[0].species, e[0].size, e[0].mood])});
+		res.render('index', {
+			animals: all
+		});
 	});
 });
+
+function getPets(searchString, callback){
+	let pets = []
+	// open the database
+	let db = new sqlite3.Database('./database/pet_store.db', sqlite3.OPEN_READWRITE, (err) => {
+	  if (err) {
+	    console.error(err.message);
+	  }
+	  console.log('Connected to the pet store database.');
+	});
+	let sql = "Select * from pets where species LIKE ?";
+	db.serialize(() => {
+	  db.all(sql,[searchString], (err, row) => {
+	    if (err) {
+	      console.error(err.message);
+	    }
+	    pets.push(row);
+	    callback(pets)
+	  });
+	});
+	 
+	db.close((err) => {
+	  if (err) {
+	    console.error(err.message);
+	  }
+	  console.log('Close the database connection.');
+	});
+}
 
 app.use('/', index);
 app.use('/users', users);
@@ -52,6 +85,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-app.listen(3005, () => console.log('Example app listening on port 3005!'))
+app.listen(3000, () => console.log('Example app listening on port 3000!'))
 
 module.exports = app;
