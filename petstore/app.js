@@ -26,10 +26,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 //handle form submit
 app.post("/", function (req, res) {
 	const pet = req.body.pet
-	const all = [[pet,"Big","Funny"],[pet, "Big", "Funny"],[pet, "Big", "Funny"]]
 	getPets(pet, function(data){
 		let all = []
-		if(data[0].length)data.forEach( e => {all.push([e[0].species, e[0].size, e[0].mood])});
+		console.log(data);
+		if(data[0])data.forEach( e => {all.push([e.species, e.size, e.mood])});
 		res.render('index', {
 			animals: all
 		});
@@ -37,7 +37,6 @@ app.post("/", function (req, res) {
 });
 
 function getPets(searchString, callback){
-	let pets = []
 	// open the database
 	let db = new sqlite3.Database('./database/pet_store.db', sqlite3.OPEN_READWRITE, (err) => {
 	  if (err) {
@@ -45,14 +44,16 @@ function getPets(searchString, callback){
 	  }
 	  console.log('Connected to the pet store database.');
 	});
-	let sql = "Select * from pets where species LIKE ?";
+	let sql = "Select * from pets where species like '%" + searchString + "%';";
+	let params = {};
+	//let sql = "Select * from pets where species LIKE $speciesname";
+	//let params = {$speciesname: '%'+searchString+'%'}
 	db.serialize(() => {
-	  db.all(sql,[searchString], (err, row) => {
+	  db.all(sql,params, (err, rows) => {
 	    if (err) {
 	      console.error(err.message);
 	    }
-	    pets.push(row);
-	    callback(pets)
+	    callback(rows)
 	  });
 	});
 	 
