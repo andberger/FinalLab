@@ -8,6 +8,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var addpets = require('./routes/addpets');
 
 var app = express();
 
@@ -30,6 +31,8 @@ app.post("/", function (req, res) {
 		let all = []
 		console.log(data);
 		if(data[0])data.forEach( e => {all.push([e.species, e.size, e.mood])});
+		console.log("hh");
+		console.log(all);
 		res.render('index', {
 			animals: all
 		});
@@ -48,13 +51,11 @@ function getPets(searchString, callback){
 	let params = {};
 	//let sql = "Select * from pets where species LIKE $speciesname";
 	//let params = {$speciesname: '%'+searchString+'%'}
-	db.serialize(() => {
-	  db.all(sql,params, (err, rows) => {
-	    if (err) {
-	      console.error(err.message);
-	    }
-	    callback(rows)
-	  });
+	db.all(sql,params, (err, rows) => {
+	  if (err) {
+	    console.error(err.message);
+	  }
+	  callback(rows)
 	});
 	 
 	db.close((err) => {
@@ -65,8 +66,42 @@ function getPets(searchString, callback){
 	});
 }
 
+app.post("/addpets", function (req, res) {
+	const animal = req.body.animal;
+	const size = req.body.size;
+	const mood = req.body.mood;
+	// open the database
+	let db = new sqlite3.Database('./database/pet_store.db', sqlite3.OPEN_READWRITE, (err) => {
+	  if (err) {
+	    console.error(err.message);
+	  }
+	  console.log('Connected to the pet store database.');
+	});
+	let sql = "INSERT INTO pets(species,size,mood) values(?,?,?)";
+	let params = [animal, size, mood];
+	db.run(sql,params, (err, rows) => {
+	  if (err) {
+	    console.error(err.message);
+	  }
+	});
+	 
+	db.close((err) => {
+	  if (err) {
+	    console.error(err.message);
+	  }
+	  console.log('Close the database connection.');
+	});
+});
+app.post("/users", function (req, res) {
+	const username = req.body.username;
+	const pw = req.body.password;
+	console.log(username);
+	console.log(pw);
+});
+
 app.use('/', index);
 app.use('/users', users);
+app.use('/addpets', addpets);
 
 
 // catch 404 and forward to error handler

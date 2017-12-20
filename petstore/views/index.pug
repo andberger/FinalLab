@@ -11,7 +11,9 @@ block content
         li.nav-item(data-target='#categories')
           a.nav-link(href='#/categories') search pets
         li.nav-item(data-target='#categories')
-          a.nav-link(href='#/categories') Log in
+          a.nav-link(href='users') Log in
+        li.nav-item(data-target='#categories')
+          a.nav-link(href='addpets') Add pets
     .row
       .col-md-6.col-md-offset-3
         h1.display-4.m-b-2 Search Pet Store
@@ -33,9 +35,9 @@ block content
                 if animals
                   for animal in animals
                     tr
-                      td= animal[0]
-                      td= animal[1]
-                      td= animal[2]
+                      td!= animal[0]
+                      td!= animal[1]
+                      td!= animal[2]
                 else
                   tr
                     td
